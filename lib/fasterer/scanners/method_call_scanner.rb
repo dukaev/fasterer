@@ -86,6 +86,7 @@ module Fasterer
         add_offense(:shuffle_first_vs_sample)
       when :select
         return unless method_call.receiver.has_block?
+        return if method_call.arguments.count > 0
 
         add_offense(:select_first_vs_detect)
       end
@@ -98,7 +99,9 @@ module Fasterer
       when :reverse
         add_offense(:reverse_each_vs_reverse_each)
       when :keys
-        add_offense(:keys_each_vs_each_key)
+        if method_call.receiver.arguments.count.zero?
+          add_offense(:keys_each_vs_each_key)
+        end
       end
     end
 
@@ -154,6 +157,8 @@ module Fasterer
 
       case method_call.receiver.name
       when :select
+        return if method_call.arguments.count > 0
+
         add_offense(:select_last_vs_reverse_detect)
       end
     end

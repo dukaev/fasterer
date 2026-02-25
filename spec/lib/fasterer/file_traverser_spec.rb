@@ -348,7 +348,7 @@ describe Fasterer::FileTraverser do
       let(:explanation) { Fasterer::Explanation.new(:for_loop_vs_each).call }
 
       it 'should print offense' do
-        match = "\e[0;31;49m#{test_file_path}:1\e[0m #{explanation}\n\n"
+        match = "\e[31m#{test_file_path}:1\e[0m #{explanation}\n\n"
 
         expect { file_traverser.send(:output, analyzer) }.to output(match).to_stdout
       end

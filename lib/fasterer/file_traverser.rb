@@ -1,10 +1,10 @@
 require 'pathname'
-require 'colorize'
 require 'English'
 
 require_relative 'analyzer'
 require_relative 'config'
 require_relative 'explanation'
+require_relative 'painter'
 
 module Fasterer
   class FileTraverser
@@ -85,7 +85,7 @@ module Fasterer
       offenses_grouped_by_type(analyzer).each do |error_group_name, error_occurences|
         error_occurences.map(&:line_number).each do |line|
           file_and_line = "#{analyzer.file_path}:#{line}"
-          print "#{file_and_line.colorize(:red)} #{explanations(error_group_name)}\n"
+          print "#{Painter.paint(file_and_line, :red)} #{explanations(error_group_name)}\n"
         end
       end
 
@@ -114,7 +114,7 @@ module Fasterer
     end
 
     def output_unable_to_find_file(path)
-      puts "No such file or directory - #{path}".colorize(:red)
+      puts Painter.paint("No such file or directory - #{path}", :red)
     end
 
     def ignored_speedups
@@ -156,19 +156,19 @@ module Fasterer
     end
 
     def inspected_files_output
-      "#{@files_inspected_count} #{pluralize(@files_inspected_count, 'file')} inspected"
-        .colorize(:green)
+      Painter.paint("#{@files_inspected_count} #{pluralize(@files_inspected_count, 'file')} inspected", :green)
     end
 
     def offenses_found_output
-      "#{@offenses_found_count} #{pluralize(@offenses_found_count, 'offense')} detected"
-        .colorize(:red)
+      color = @offenses_found_count.zero? ? :green : :red
+
+      Painter.paint("#{@offenses_found_count} #{pluralize(@offenses_found_count, 'offense')} detected", color)
     end
 
     def unparsable_files_output
       return if @unparsable_files_count.zero?
-      "#{@unparsable_files_count} unparsable #{pluralize(@unparsable_files_count, 'file')} found"
-        .colorize(:red)
+
+      Painter.paint("#{@unparsable_files_count} unparsable #{pluralize(@unparsable_files_count, 'file')} found", :red)
     end
 
     def pluralize(n, singular, plural = nil)
